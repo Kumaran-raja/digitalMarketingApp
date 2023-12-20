@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".BankDetails">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#7067F1"
+        android:orientation="horizontal"
+        tools:ignore="TextSizeCheck">
+
+        <ImageView
+            android:id="@+id/backactivity"
+            android:layout_width="60dp"
+            android:layout_height="50dp"
+            android:src="@drawable/back"
+            android:layout_gravity="center"
+            android:importantForAccessibility="no" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/bank_details"
+            android:textColor="@color/black"
+            android:textSize="40sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/account_number"
+                android:textSize="20sp"
+                android:layout_marginTop="10dp"
+                />
+            <EditText
+                android:id="@+id/accno"
+                android:layout_width="350dp"
+                android:layout_height="48dp"
+                android:background="@drawable/edittext_style"
+                android:layout_marginTop="10dp"
+                android:inputType="numberPassword"
+                android:hint="@string/account_number_hint"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:autofillHints="" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/confirm_account_number"
+                android:textSize="20sp"
+                android:layout_marginTop="10dp"
+                />
+            <EditText
+                android:id="@+id/confirmaccno"
+                android:layout_width="350dp"
+                android:layout_height="48dp"
+                android:inputType="number"
+                android:background="@drawable/edittext_style"
+                android:layout_marginTop="10dp"
+                android:hint="@string/account_number_hint"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:autofillHints="" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/account_holder_name"
+                android:textSize="20sp"
+                android:layout_marginTop="10dp"
+                />
+            <EditText
+                android:id="@+id/accholdername"
+                android:layout_width="350dp"
+                android:layout_height="48dp"
+                android:inputType="textPersonName"
+                android:background="@drawable/edittext_style"
+                android:layout_marginTop="10dp"
+                android:hint="@string/account_holder_name_hint"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:autofillHints="" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ifsc_code"
+                android:textSize="20sp"
+                android:layout_marginTop="10dp"
+                />
+            <EditText
+                android:id="@+id/ifsccode"
+                android:layout_width="350dp"
+                android:layout_height="48dp"
+                android:background="@drawable/edittext_style"
+                android:layout_marginTop="10dp"
+                android:hint="@string/ifsc_code_hint"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:inputType="textCapCharacters"
+                android:textAllCaps="true"
+                android:autofillHints="" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/bank_name"
+                android:textSize="20sp"
+                android:layout_marginTop="10dp"
+                />
+
+            <EditText
+                android:id="@+id/bankname"
+                android:layout_width="350dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:autofillHints=""
+                android:background="@drawable/edittext_style"
+                android:gravity="center_horizontal"
+                android:hint="@string/bank_name"
+                android:inputType="text"
+                android:paddingTop="15dp"
+                tools:ignore="DuplicateSpeakableTextCheck" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/branch_name"
+                android:textSize="20sp"
+                android:layout_marginTop="10dp"
+                />
+
+            <EditText
+                android:id="@+id/branchname"
+                android:layout_width="350dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:autofillHints=""
+                android:background="@drawable/edittext_style"
+                android:gravity="center_horizontal"
+                android:hint="@string/branch_name"
+                android:inputType="text"
+                android:paddingTop="15dp"
+                tools:ignore="DuplicateSpeakableTextCheck" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/submit_confirmation"
+                android:textSize="20sp"
+                android:textColor="#F30B0B"
+                android:textStyle="bold"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_marginTop="10dp"/>
+
+
+            <Button
+                android:id="@+id/submit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/submit"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                />
+            <ProgressBar
+                android:id="@+id/process"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"/>
+        </LinearLayout>
+
+
+
+    </ScrollView>
+
+
+</LinearLayout>

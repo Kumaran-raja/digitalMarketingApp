@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".Profile_activity">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#7067F1"
+        android:orientation="horizontal"
+        tools:ignore="TextSizeCheck">
+
+        <ImageView
+            android:id="@+id/backactivity"
+            android:layout_width="60dp"
+            android:layout_height="50dp"
+            android:src="@drawable/back"
+            android:layout_gravity="center"
+            android:importantForAccessibility="no" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
+            android:text="@string/profile"
+            android:textColor="#070505"
+            android:textSize="40sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/name_profile"
+                android:textSize="20sp"
+                android:layout_marginTop="15dp"
+                android:layout_marginStart="10dp"
+                android:textColor="@color/black"
+                android:layout_marginLeft="10dp" />
+
+            <EditText
+                android:id="@+id/name"
+                android:layout_width="350dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:autofillHints="name"
+                android:background="@drawable/edittext_style"
+                android:gravity="center"
+                android:hint="@string/name"
+                android:inputType="textPersonName" />
+
+            <!-- Phone no -->
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/phone1"
+                android:textSize="20sp"
+                android:layout_marginTop="15dp"
+                android:layout_marginStart="10dp"
+                android:textColor="@color/black"
+                android:layout_marginLeft="10dp" />
+
+            <EditText
+                android:id="@+id/phone"
+                android:layout_width="350dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:autofillHints="phone"
+                android:background="@drawable/edittext_style"
+                android:gravity="center"
+                android:hint="@string/phone"
+                android:inputType="phone"
+                tools:ignore="DuplicateSpeakableTextCheck" />
+            <!-- Email -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/emailstar"
+                android:textSize="20sp"
+                android:layout_marginTop="15dp"
+                android:layout_marginStart="10dp"
+                android:textColor="@color/black"
+                android:layout_marginLeft="10dp" />
+
+            <EditText
+                android:id="@+id/email"
+                android:layout_width="350dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:autofillHints="emailAddress"
+                android:background="@drawable/edittext_style"
+                android:gravity="center"
+                android:hint="@string/email"
+                android:textColorHint="@color/black"
+                android:inputType="textEmailAddress"
+                tools:ignore="DuplicateSpeakableTextCheck" />
+
+            <!-- Add CalendarView to display the Calendar -->
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/date_of_birth1"
+                android:textSize="20sp"
+                android:layout_marginTop="15dp"
+                android:layout_marginStart="10dp"
+                android:textColor="@color/black"
+                android:layout_marginLeft="10dp" />
+
+            <EditText
+                android:id="@+id/dob"
+                android:layout_width="350dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:autofillHints="dob"
+                android:background="@drawable/edittext_style"
+                android:gravity="center"
+                android:hint="@string/dd_mm_yyyy"
+                tools:ignore="DuplicateSpeakableTextCheck"
+                android:inputType="" />
+
+            <Button
+                android:id="@+id/dobselector"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/select_dob"
+                android:layout_marginLeft="30dp"
+                android:layout_marginStart="30dp" />
+
+
+
+            <!-- Address -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/address"
+                android:textSize="20sp"
+                android:layout_marginTop="15dp"
+                android:layout_marginStart="10dp"
+                android:textColor="@color/black"
+                android:layout_marginLeft="10dp" />
+
+            <EditText
+                android:id="@+id/address"
+                android:layout_width="350dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:autofillHints="postalAddress"
+                android:background="@drawable/edittext_style"
+                android:gravity="center"
+                android:hint="@string/address"
+                android:inputType="textPostalAddress"
+                tools:ignore="DuplicateSpeakableTextCheck" />
+
+            <Button
+                android:id="@+id/submit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/submit"
+                android:layout_marginTop="20dp"
+                android:layout_gravity="center"/>
+
+            <ProgressBar
+                android:id="@+id/process"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

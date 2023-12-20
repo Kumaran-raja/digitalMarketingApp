@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "646162902525",
+    "project_id": "ownbusiness-76d0d",
+    "storage_bucket": "ownbusiness-76d0d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:646162902525:android:1c81ff77a09627eeaffd94",
+        "android_client_info": {
+          "package_name": "com.example.kumaranraja.business"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWkSuq9LgpV6uLVFnuDjem1NF7M0Ycb6U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

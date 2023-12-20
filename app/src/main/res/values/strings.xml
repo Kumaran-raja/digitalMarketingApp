@@ -1,0 +1,95 @@
+<resources>
+    <string name="app_name">business</string>
+    <string name="login_key">LOGIN</string>
+    <string name="email">Email</string>
+    <string name="email1">Register Email Address</string>
+    <string name="password">Password</string>
+    <string name="signup">SIGNUP</string>
+    <string name="submit">SUBMIT</string>
+    <string name="forgotpassword">Forgot Password?</string>
+    <string name="register">I don\'t have an account? Click Here</string>
+    <string name="resetpassword">NOTE : Password Reset Link Send To Your Register Email</string>
+    <string name="title_activity_mainpage">Mainpage</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Own Business</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+
+
+    <string name="dashboard">Dashboard</string>
+    <string name="todaytask">Today task</string>
+    <string name="profile">Profile</string>
+    <string name="title_activity_allpage">allpage</string>
+    <string name="action_settings">Settings</string>
+    <string name="newaccount">Signup</string>
+    <string name="name">Name</string>
+    <string name="phone">Phone Number</string>
+    <string name="_0">0</string>
+    <string name="task_income">Task Income</string>
+    <string name="referral_income">Referral Income</string>
+    <string name="withdrawal">Withdrawal</string>
+    <string name="today_task">Today Task</string>
+    <string name="bank_details">Bank Details</string>
+    <string name="welcome_to_business">Welcome to Business</string>
+    <string name="name_profile">Name *</string>
+    <string name="address">Address</string>
+    <string name="date_of_birth">Date of Birth</string>
+    <string name="phone1">Phone *</string>
+    <string name="emailstar">Email *</string>
+    <string name="date_of_birth1">Date of Birth *</string>
+    <string name="dd_mm_yyyy">DD-MM-YYYY</string>
+    <string name="account_number">Account Number *</string>
+    <string name="confirm_account_number">Confirm Account Number *</string>
+    <string name="account_number_hint">Account Number</string>
+    <string name="account_holder_name">Account Holder Name *</string>
+    <string name="account_holder_name_hint">Account Holder Name</string>
+    <string name="ifsc_code">IFSC Code *</string>
+    <string name="ifsc_code_hint">IFSC Code</string>
+    <string name="bank_name">Bank Name</string>
+    <string name="branch_name">Branch Name</string>
+    <string name="confirm_account_number1">Confirm Account Number</string>
+    <string name="minimum_withdrawal_request_amount_650">Minimum Withdrawal Request Amount : 650</string>
+    <string name="enter_amount">Enter Amount</string>
+    <string name="available_amount">Available Amount:</string>
+    <string name="list">List</string>
+
+    <string name="play">Play</string>
+
+    <string name="submit_confirmation">Note : BEFORE SUBMIT BANK DETAILS MUST CHECK ABOVE INFORMATION ARE CORRECT</string>
+    <string name="click_to_show_income">Click To Show Income</string>
+    <string name="star">*</string>
+    <string name="kindly_wait_1_mins_show_submit_button">Kindly Wait 1 Minutes Submit Button Enable Automatically</string>
+    <string name="task_wallet">Task Wallet:</string>
+    <string name="today_income">Today Income:</string>
+    <string name="select_dob">Select DOB</string>
+    <string name="enter_otp">Enter OTP</string>
+    <string name="get_otp">Get OTP</string>
+    <string name="profile_id">Profile ID:</string>
+    <string name="your_id_register_successfully_login_your_account_using_your_register_email_id_and_password">YOUR ID REGISTER SUCCESSFULLY LOGIN YOUR ACCOUNT USING YOUR REGISTER EMAIL ID AND PASSWORD</string>
+    <string name="referral_code">Referral Code</string>
+    <string name="hint">*****</string>
+    <string name="downline">Downline</string>
+    <string name="downline_name">Downline Name</string>
+    <string name="profilei">Profile ID</string>
+    <string name="current_plan">Current Plan</string>
+    <string name="date_of_join">Date of Join</string>
+    <string name="s_no">S.No</string>
+    <string name="downline_id">Downline ID</string>
+    <string name="downline_list">DOWNLINE LIST</string>
+    <string name="personal_details">Personal Details</string>
+    <string name="team_list">TEAM LIST</string>
+    <string name="my_team">MY TEAM</string>
+    <string name="business">Business</string>
+    <string name="choose_plan">Choose Plan</string>
+    <string name="diamond_6000">Diamond</string>
+    <string name="gold_4500">Gold</string>
+    <string name="silver_1500">Silver</string>
+    <string name="bronze_300">Bronze</string>
+    <string name="joining_plan">Joining Plan</string>
+    <string name="payout_history">Payout History</string>
+    <string name="status">Status</string>
+    <string name="sponsor_id">Sponsor ID</string>
+
+
+</resources>

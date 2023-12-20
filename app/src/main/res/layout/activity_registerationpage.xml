@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".registerationpage">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#2C5EF2"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="168dp"
+            android:layout_height="50dp"
+            android:gravity="center_vertical"
+            android:text="@string/business"
+            android:textColor="#EC000000"
+            android:textSize="25sp"
+            android:paddingStart="10dp"
+            android:textStyle="bold"
+            tools:ignore="MissingConstraints,RtlCompat,RtlSymmetry" />
+
+        <TextView
+            android:id="@+id/login"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:text="@string/login_key"
+            android:textColor="#EBE4E4"
+            android:textSize="30sp"
+            android:textStyle="bold"
+
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="MissingConstraints" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:baselineAligned="false"
+                android:text="@string/newaccount"
+                android:textColor="#C4B61E"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/name"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:saveEnabled="true"
+                android:autofillHints="name"
+                android:drawableStart="@drawable/email"
+                android:drawablePadding="5dp"
+                android:hint="@string/name"
+                android:inputType="textPersonName"
+                android:minHeight="48dp"
+                android:drawableLeft="@drawable/email" />
+
+
+            <EditText
+                android:id="@+id/email"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:saveEnabled="true"
+                android:autofillHints="emailAddress"
+                android:drawableStart="@drawable/email1"
+                android:drawablePadding="5dp"
+                android:hint="@string/email"
+                android:inputType="textEmailAddress"
+                android:minHeight="48dp"
+                android:drawableLeft="@drawable/email" />
+
+
+
+
+            <EditText
+                android:id="@+id/password"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="15dp"
+                android:autofillHints="password"
+                android:drawableStart="@drawable/lock"
+                android:drawableLeft="@drawable/lock"
+                android:drawablePadding="5dp"
+                android:saveEnabled="true"
+                android:hint="@string/password"
+                android:inputType="textPassword"
+                android:minHeight="48dp"
+                 />
+
+            <EditText
+                android:id="@+id/referralcode"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="15dp"
+                android:autofillHints=""
+                android:drawableStart="@drawable/lock"
+                android:drawableLeft="@drawable/lock"
+                android:drawablePadding="5dp"
+                android:hint="@string/referral_code"
+                android:inputType="text"
+                android:minHeight="48dp"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/choose_plan"
+                android:textSize="20sp"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="46dp"
+                android:textStyle="bold"
+                android:layout_marginLeft="20dp" />
+            <RadioGroup
+                android:id="@+id/planview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RadioButton
+                    android:id="@+id/basic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="@string/bronze_300"
+                    android:textStyle="bold"
+                    android:textSize="20sp"
+                    android:layout_marginStart="100dp"
+                    android:layout_marginLeft="100dp"
+                    />
+
+                <RadioButton
+                    android:id="@+id/silver"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="@string/silver_1500"
+                    android:textStyle="bold"
+                    android:textSize="20sp"
+                    android:layout_marginStart="100dp"
+                    android:layout_marginLeft="100dp"
+                   />
+
+                <RadioButton
+                    android:id="@+id/gold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="@string/gold_4500"
+                    android:textStyle="bold"
+                    android:textSize="20sp"
+                    android:layout_marginStart="100dp"
+                    android:layout_marginLeft="100dp"
+                   />
+                <RadioButton
+                    android:id="@+id/diamond"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="@string/diamond_6000"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="100dp"
+                    android:layout_marginLeft="100dp" />
+
+
+            </RadioGroup>
+
+
+            <Button
+                android:id="@+id/signup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="10pt"
+                android:background="#42E33B"
+                android:gravity="center"
+                android:text="@string/signup"
+                android:textStyle="bold"
+                tools:ignore="TextContrastCheck" />
+
+            <ProgressBar
+                android:id="@+id/process"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:layout_gravity="center"/>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/profile_id"
+                android:textSize="25sp"
+                android:textStyle="bold"
+                />
+
+            <TextView
+                android:id="@+id/uniqueCodeTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="25sp"
+                android:layout_marginStart="20dp"
+                android:textStyle="bold"
+                android:textColor="#E10E0E"
+                android:textIsSelectable="true"
+                android:text=""
+                android:layout_marginLeft="20dp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/alert"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/your_id_register_successfully_login_your_account_using_your_register_email_id_and_password"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:textColor="#F40C0C"
+                android:textSize="15sp"
+                android:layout_marginTop="20dp"/>
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
