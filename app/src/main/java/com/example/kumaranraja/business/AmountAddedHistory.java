@@ -26,7 +26,7 @@ public class AmountAddedHistory extends AppCompatActivity {
 
 // Add instances of your row data to the list (add as many as needed)
         for (int i = 1; i <= 10; i++) {
-            dataList.add(new TableRowData("Column 1 Data " + i, "Column 2 Data " + i, "Column 3 Data " + i, "Column 4 Data " + i));
+            dataList.add(new TableRowData("S.No" + i, "Amount" + i, "Description" + i, "Date" + i));
         }
 
         TableAdapter adapter = new TableAdapter(dataList);
