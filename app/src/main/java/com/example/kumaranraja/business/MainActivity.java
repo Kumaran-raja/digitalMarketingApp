@@ -10,6 +10,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class MainActivity extends AppCompatActivity {
 
     EditText email, password;
@@ -69,10 +71,18 @@ public class MainActivity extends AppCompatActivity {
     public void signin(String userEmail, String userPassword) {
         auth.signInWithEmailAndPassword(userEmail, userPassword).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                Intent i = new Intent(MainActivity.this, allwork.class);
-                startActivity(i);
-                Toast.makeText(MainActivity.this, "Login Successfully", Toast.LENGTH_SHORT).show();
+                FirebaseUser user = auth.getCurrentUser();
+                if (user != null && user.isEmailVerified()) {
+                    Intent i = new Intent(MainActivity.this, allwork.class);
+                    startActivity(i);
+                    process.setVisibility(View.INVISIBLE);
+                } else {
+                    // Email is not verified
+                    Toast.makeText(MainActivity.this, "Email not verified. Check your email for a verification link.", Toast.LENGTH_SHORT).show();
+                    process.setVisibility(View.INVISIBLE);
+                }
                 process.setVisibility(View.INVISIBLE);
+
             } else {
                 process.setVisibility(View.INVISIBLE);
                 Toast.makeText(MainActivity.this, "Check your Email and Password", Toast.LENGTH_SHORT).show();

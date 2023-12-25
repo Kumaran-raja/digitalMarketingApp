@@ -17,7 +17,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Objects;
 
 public class allwork extends AppCompatActivity {
@@ -34,6 +37,8 @@ public class allwork extends AppCompatActivity {
     DatabaseReference profileref = database.getReference("Users Details");
 
     DatabaseReference downlinesRef;
+
+    DatabaseReference PayoutHistory = database.getReference("Payout History");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +62,8 @@ public class allwork extends AppCompatActivity {
         DOJ=findViewById(R.id.DOJ);
         statusview=findViewById(R.id.status);
         history=findViewById(R.id.history);
+
+
 
 
         profileref.child(Objects.requireNonNull(mAuth.getUid())).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -153,7 +160,10 @@ public class allwork extends AppCompatActivity {
                                             String status= "ACTIVE";
                                             statuschange();
                                             int Activationfees=300;
-                                            removeActiveAmountfromWallet(Activationfees,profile);
+
+                                            int sponsorwallet=30;
+
+                                            removeActiveAmountfromWallet(Activationfees,profile,sponsorwallet);
                                             statusview.setText("ACTIVE");
                                             statusview.setEnabled(false);
 
@@ -166,7 +176,9 @@ public class allwork extends AppCompatActivity {
                                             statusview.setText("ACTIVE");
                                             downlinesRef.child("status").setValue("ACTIVE");
                                             int Activationfees=1200;
-                                            removeActiveAmountfromWallet(Activationfees,profile);
+
+                                            int sponsorwallet=120;
+                                            removeActiveAmountfromWallet(Activationfees,profile,sponsorwallet);
                                             statusview.setEnabled(false);
 
                                         }else{
@@ -180,7 +192,9 @@ public class allwork extends AppCompatActivity {
                                             downlinesRef.child("status").setValue("ACTIVE");
 
                                             int Activationfees=2500;
-                                            removeActiveAmountfromWallet(Activationfees,profile);
+                                            int sponsorwallet=250;
+
+                                            removeActiveAmountfromWallet(Activationfees,profile,sponsorwallet);
                                             statusview.setEnabled(false);
 
                                         }else{
@@ -194,7 +208,9 @@ public class allwork extends AppCompatActivity {
                                             downlinesRef.child("status").setValue("ACTIVE");
 
                                             int Activationfees=6000;
-                                            removeActiveAmountfromWallet(Activationfees,profile);
+
+                                            int sponsorwallet=600;
+                                            removeActiveAmountfromWallet(Activationfees,profile,sponsorwallet);
                                             statusview.setEnabled(false);
 
                                         }else{
@@ -265,6 +281,8 @@ public class allwork extends AppCompatActivity {
 
     }
 
+
+
     private void referralwaletretrieve(String proid) {
         String uid = mAuth.getUid();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -278,6 +296,7 @@ public class allwork extends AppCompatActivity {
                     if (referralWalletValue != null) {
                         // Assuming you have a method in allwork to update taskwallet in UI
                         updateReferralWalletInUI(referralWalletValue.intValue());
+                        checkReferAmountOccur(referralWalletValue.intValue());
                     }
                 }
             }
@@ -372,7 +391,7 @@ public class allwork extends AppCompatActivity {
 
    //activation amount remove from taskwallet
 
-    private void removeActiveAmountfromWallet(int activationFees,String profile) {
+    private void removeActiveAmountfromWallet(int activationFees,String profile,int sponsorwallet) {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         String uid = mAuth.getUid();
         DatabaseReference taskWalletRef = FirebaseDatabase.getInstance().getReference("WalletAvailableAmount").child(profile).child(uid);
@@ -387,10 +406,33 @@ public class allwork extends AppCompatActivity {
 
                     if (currentTaskWalletValue != null) {
                         int fees = activationFees;
+
+
+                        //referAmount added to database DOWNLINE path
+                        int sponsorwalletadd=sponsorwallet;
+                        String sponsorid1=sponsorid.getText().toString();
+                        SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+                        String userId = sharedPreferences.getString("userId", "");
+                        downlinesRef = FirebaseDatabase.getInstance()
+                                .getReference("DOWNLINES")
+                                .child(sponsorid1)
+                                .child(userId);
+                        downlinesRef.child("ReferAmount").setValue(sponsorwalletadd);
+
+
                         int updatedTaskWalletAmount = currentTaskWalletValue.intValue() - fees;
 
                         // Update taskwallet in Firebase
                         taskWalletRef.child("taskwallet").setValue(updatedTaskWalletAmount);
+
+
+                        String currentDate = getCurrentDate();
+                        String description="Deduct Upgrade Fees";
+                        DatabaseReference value = PayoutHistory.child(Objects.requireNonNull(mAuth.getUid())).child(profile).child("upgrade");
+                        value.child("Task date").setValue(currentDate);
+                        value.child("Amount From").setValue(description);
+                        value.child("amount").setValue(activationFees);
+
 
                         // Update taskwallet in UI
                         updateTaskWalletInUI(updatedTaskWalletAmount);
@@ -408,5 +450,86 @@ public class allwork extends AppCompatActivity {
                 Toast.makeText(allwork.this, "Error retrieving data: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+    private String getCurrentDate() {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+        return sdf.format(new Date());
+    }
+
+    private void checkReferAmountOccur(int referralWalletValue) {
+        String uid=mAuth.getUid();
+        if (uid != null) {
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference codesRef = database.getReference("Users Details").child(uid);
+
+            // Attach a ValueEventListener to retrieve the data
+            codesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        // dataSnapshot.getValue() returns a Map<String, Object>
+                        User user = dataSnapshot.getValue(User.class);
+                        if (user != null) {
+                            String profileID=user.getProfileID();
+
+                            DatabaseReference downlinesRef = FirebaseDatabase.getInstance()
+                                    .getReference("DOWNLINES")
+                                    .child(profileID);
+
+                            downlinesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    for (DataSnapshot downlineSnapshot : dataSnapshot.getChildren()) {
+
+                                        String downlineKey = downlineSnapshot.getKey();
+                                        Integer amount = downlineSnapshot.child("ReferAmount").getValue(Integer.class);
+
+                                        if (amount != null) {
+                                            try {
+                                                String referwalletamount = referralWallet.getText().toString();
+                                                int afterReferAmountAdded = Integer.parseInt(referwalletamount);
+                                                int totalAmountAdded = amount + afterReferAmountAdded;
+
+                                                DatabaseReference taskWalletRef = FirebaseDatabase.getInstance().getReference("WalletAvailableAmount").child(profileID).child(uid);
+                                                taskWalletRef.child("referralWallet").setValue(totalAmountAdded);
+
+                                                String currentDate = getCurrentDate();
+                                                String description="Referral Amount";
+                                                DatabaseReference value = PayoutHistory.child(Objects.requireNonNull(mAuth.getUid())).child(profileID).child("ReferAmount");
+                                                value.child("Task date").setValue(currentDate);
+                                                value.child("Amount From").setValue(description);
+                                                value.child("amount").setValue(amount);
+
+                                                // Retrieve the amount, display it, and then delete the key and value
+                                                Toast.makeText(allwork.this, "Referral Amount Added: " + amount, Toast.LENGTH_SHORT).show();
+
+                                                // Delete the key and value from the database
+                                                downlinesRef.child(downlineKey).child("ReferAmount").removeValue();
+                                            } catch (NumberFormatException e) {
+                                                Log.e("RetrieveDataActivity", "Error parsing taskwalletamount to Integer", e);
+                                            }
+                                        }
+
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    // Handle the error
+                                    Log.e("RetrieveDataActivity", "Error getting data", databaseError.toException());
+                                }
+                            });
+
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    // Handle the error
+                    Log.e("AnotherActivity", "Error getting data", databaseError.toException());
+                }
+            });
+        }
     }
 }

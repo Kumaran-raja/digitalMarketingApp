@@ -142,15 +142,5 @@
 
 
     </HorizontalScrollView>
-    <TextView
-        android:id="@+id/textalert"
-        android:layout_width="match_parent"
-        android:layout_height="45dp"
-        android:gravity="center"
-        android:text="NO DOWNLINE"
-        android:textStyle="bold"
-        android:textSize="30sp"
-        android:textColor="#fff"
-        android:background="#F18080"
-        />
+
 </LinearLayout>

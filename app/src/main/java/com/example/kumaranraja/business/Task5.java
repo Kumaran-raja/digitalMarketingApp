@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.util.Log;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -36,6 +37,9 @@ public class Task5 extends AppCompatActivity {
     private FirebaseAuth mAuth;
 
     private SharedPreferences sharedPreferences;
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference myRef = database.getReference("Users Details");
+    DatabaseReference PayoutHistory = database.getReference("Payout History");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,14 +79,53 @@ public class Task5 extends AppCompatActivity {
                     Toast.makeText(Task5.this, "Task5 Today Already Completed", Toast.LENGTH_SHORT).show();
                     return;
                 }
+                myRef.child(Objects.requireNonNull(mAuth.getUid())).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            Log.d("Profile_activity", "Raw Data: " + dataSnapshot.getValue());
 
-                // Add amount to taskwallet
-                addAmountToTaskWallet();
+                            User user = dataSnapshot.getValue(User.class);
 
-                // Disable button for the day
+                            if (user != null) {
+
+                                String plan=user.getPlan();
+
+                                if(plan.equals("Bronze")){
+                                    int amount=2;
+                                    addAmountToTaskWallet(amount);
+
+                                }
+                                else if(plan.equals("Silver")){
+                                    int amount=5;
+                                    addAmountToTaskWallet(amount);
+                                }
+                                else if(plan.equals("Gold")){
+                                    int amount=10;
+                                    addAmountToTaskWallet(amount);
+                                }
+                                else if(plan.equals("Diamond")){
+                                    int amount=12;
+                                    addAmountToTaskWallet(amount);
+                                }
+                            } else {
+                                Log.e("Profile_activity", "User object is null");
+                            }
+                        } else {
+                            // Handle the case where data doesn't exist
+                            Log.e("Profile_activity", "Data does not exist");
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        // Handle any errors here
+                        Log.e("Profile_activity", "Error retrieving data: " + databaseError.getMessage());
+                    }
+                });
+
                 disableButtonForDay();
 
-                // Navigate to allwork activity
                 Intent i = new Intent(Task5.this, Today_task.class);
                 startActivity(i);
             }
@@ -119,7 +162,7 @@ public class Task5 extends AppCompatActivity {
     }
 
     // Add amount to taskwallet
-    private void addAmountToTaskWallet() {
+    private void addAmountToTaskWallet(int amount) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference profileref = database.getReference("Users Details");
         profileref.child(Objects.requireNonNull(mAuth.getUid())).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -131,7 +174,13 @@ public class Task5 extends AppCompatActivity {
 
                     String profileid=user.getProfileID();
                     SharedPreferences sharedPreferences = getSharedPreferences("Task1Prefs", MODE_PRIVATE);
-                    int amountToAdd = 5; // You can change this value as needed
+                    int amountToAdd = amount;
+                    String currentDate = getCurrentDate();
+                    String description="Task5 Amount";
+                    DatabaseReference value = PayoutHistory.child(mAuth.getUid()).child(profileid).child("Task5");
+                    value.child("Task date").setValue(currentDate);
+                    value.child("Amount From").setValue(description);
+                    value.child("amount").setValue(amountToAdd);
                     int currentTaskWalletAmount = sharedPreferences.getInt("taskwallet", 0);
 
                     checkFirebaseTaskWallet(currentTaskWalletAmount, amountToAdd,profileid);
@@ -253,5 +302,9 @@ public class Task5 extends AppCompatActivity {
                 }
             });
         }
+    }
+    private String getCurrentDate() {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+        return sdf.format(new Date());
     }
 }

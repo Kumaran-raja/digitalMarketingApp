@@ -4,12 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -22,16 +20,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import java.util.Map;
 import java.util.Objects;
 
 
 public class Downline extends AppCompatActivity {
     private TableLayout tableLayout;
     FirebaseAuth mAuth;
-    ImageView backButton,textalert;
-    private SharedPreferences sharedPreferences;
-    private boolean updateOccurred = false;
+    ImageView backButton;
 
     private DatabaseReference downlinesRef;
 
@@ -41,11 +36,9 @@ public class Downline extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_downline);
         tableLayout = findViewById(R.id.tableLayout);
-        textalert=findViewById(R.id.textalert);
         mAuth = FirebaseAuth.getInstance();
         backButton=findViewById(R.id.backactivity);
         backButton.setOnClickListener(v -> finish());
-        sharedPreferences = getSharedPreferences("referamount", MODE_PRIVATE);
         String uid = mAuth.getUid();
         downlinesRef = FirebaseDatabase.getInstance()
                 .getReference("DOWNLINES");
@@ -62,8 +55,6 @@ public class Downline extends AppCompatActivity {
                         // dataSnapshot.getValue() returns a Map<String, Object>
                         User user = dataSnapshot.getValue(User.class);
                         if (user != null) {
-                            textalert.setVisibility(View.INVISIBLE);
-                            // Populate the EditText fields with the retrieved data
                             String profileID=user.getProfileID();
 
                             DatabaseReference downlinesRef = FirebaseDatabase.getInstance()
@@ -81,37 +72,8 @@ public class Downline extends AppCompatActivity {
                                         String downlineName = downlineSnapshot.child("Downline Name").getValue(String.class);
                                         String status = downlineSnapshot.child("status").getValue(String.class);
                                         String plan = downlineSnapshot.child("plan").getValue(String.class);
-                                        //all detail show in downline table view
-                                        addTableRow(downlineName,downlineProfileId,regDate,status,plan);
-                                        assert status != null;
-                                        if(status.equals("ACTIVE")){
-                                            if (plan != null) {
-                                                if (plan.equals("Bronze")) {
-                                                    int referamount = 30;
-                                                    SharedPreferences sharedPreferences = getSharedPreferences("Refer1Prefs", MODE_PRIVATE);
-                                                    int currentTaskWalletAmount = sharedPreferences.getInt("referralWallet", 0);
-                                                    updateReferralWalletInFirebase(currentTaskWalletAmount,referamount,profileID);
-                                                } else if (plan.equals("Silver")) {
-                                                    int referamount = 120;
-                                                    SharedPreferences sharedPreferences = getSharedPreferences("Refer1Prefs", MODE_PRIVATE);
-                                                    int currentTaskWalletAmount = sharedPreferences.getInt("referralWallet", 0);
-                                                    updateReferralWalletInFirebase(currentTaskWalletAmount,referamount,profileID);
-                                                } else if (plan.equals("Gold")) {
-                                                    int referamount = 250;
-                                                    SharedPreferences sharedPreferences = getSharedPreferences("Refer1Prefs", MODE_PRIVATE);
-                                                    int currentTaskWalletAmount = sharedPreferences.getInt("referralWallet", 0);
-                                                    updateReferralWalletInFirebase(currentTaskWalletAmount,referamount,profileID);
-                                                } else if (plan.equals("Diamond")) {
-                                                    int referamount = 600;
-                                                    SharedPreferences sharedPreferences = getSharedPreferences("Refer1Prefs", MODE_PRIVATE);
-                                                    int currentTaskWalletAmount = sharedPreferences.getInt("referralWallet", 0);
-                                                    updateReferralWalletInFirebase(currentTaskWalletAmount,referamount,profileID);
-                                                }
-
-                                            }
-
-                                        }
-
+                                         //all detail show in downline table view
+                                        addTableRow(downlineName, downlineProfileId, regDate, status, plan);
                                     }
                                 }
 
@@ -122,9 +84,6 @@ public class Downline extends AppCompatActivity {
                                 }
                             });
 
-                        }
-                        else{
-                            textalert.setVisibility(View.VISIBLE);
                         }
                     }
                 }
@@ -137,53 +96,6 @@ public class Downline extends AppCompatActivity {
             });
         }
 
-    }
-
-    private void updateReferralWalletInFirebase(int currentTaskWalletAmount, int referamount, String profileID) {
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        String uid = mAuth.getUid();
-
-        if (uid != null) {
-            FirebaseDatabase database = FirebaseDatabase.getInstance();
-            DatabaseReference myRef = database.getReference("WalletAvailableAmount").child(profileID).child(uid).child("referralWallet");
-
-            myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        // Firebase taskwallet value exists
-                        int firebaseReferralWalletAmount = dataSnapshot.getValue(Integer.class);
-                        int updatedReferWalletAmount = firebaseReferralWalletAmount + referamount;
-
-                        // Update taskwallet in shared preferences
-                        sharedPreferences.edit().putInt("referralWallet", updatedReferWalletAmount).apply();
-
-                        // Update taskwallet in allwork activity
-                        updateReferWalletInAllWork(updatedReferWalletAmount);
-
-                        // Update taskwallet in Firebase
-                        updateReferWalletInFirebase(updatedReferWalletAmount,profileID);
-                    } else {
-                        // Firebase taskwallet value does not exist
-                        int updatedReferWalletAmount = currentTaskWalletAmount + referamount;
-
-                        // Update taskwallet in shared preferences
-                        sharedPreferences.edit().putInt("referralWallet", updatedReferWalletAmount).apply();
-
-                        // Update taskwallet in allwork activity
-                        updateReferWalletInAllWork(updatedReferWalletAmount);
-
-                        // Update taskwallet in Firebase
-                        updateReferWalletInFirebase(updatedReferWalletAmount,profileID);
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    // Handle onCancelled if needed
-                }
-            });
-        }
     }
 
 
@@ -233,59 +145,6 @@ public class Downline extends AppCompatActivity {
         DownlineIDstatus.setTextSize(20);
         tableRow.addView(DownlineIDstatus);
         tableLayout.addView(tableRow);
-    }
-
-    private void updateReferWalletInFirebase(int updatedTaskWalletAmount,String profileid) {
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        String uid = mAuth.getUid();
-
-        if (uid != null) {
-            FirebaseDatabase database = FirebaseDatabase.getInstance();
-            DatabaseReference myRef = database.getReference("WalletAvailableAmount").child(profileid).child(uid).child("taskwallet");
-
-            // Update taskwallet value in Firebase
-            myRef.setValue(updatedTaskWalletAmount)
-                    .addOnSuccessListener(aVoid -> {
-                        // Update in Firebase successful
-                        Toast.makeText(Downline.this, "Task3 amount Added Successfully", Toast.LENGTH_SHORT).show();
-                    })
-                    .addOnFailureListener(e -> {
-                        // Handle failure
-                        Toast.makeText(Downline.this, "Task3 amount cannot Added Check Your Internet Connection", Toast.LENGTH_SHORT).show();
-                    });
-        }
-    }
-    private void updateReferWalletInAllWork(int updatedReferWalletAmount) {
-
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference profileref = database.getReference("Users Details");
-        profileref.child(Objects.requireNonNull(mAuth.getUid())).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    // Retrieve the user's data from the database
-                    User user = dataSnapshot.getValue(User.class);
-
-                    String profileid = user.getProfileID();
-                    SharedPreferences allWorkPreferences = getSharedPreferences("AllWorkPrefs", MODE_PRIVATE);
-                    SharedPreferences.Editor editor = allWorkPreferences.edit();
-                    editor.putInt("taskwallet", updatedReferWalletAmount);
-                    editor.apply();
-
-                    // Update taskwallet in Firebase
-                    updateReferWalletInFirebase(updatedReferWalletAmount, profileid);
-
-                } else {
-                    Toast.makeText(Downline.this, "", Toast.LENGTH_SHORT).show();
-
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Handle any errors here
-            }
-        });
     }
 
 }

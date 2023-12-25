@@ -43,6 +43,7 @@ public class Profile_activity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
 
+        phone.setEnabled(false);
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
             currentUser.reload()

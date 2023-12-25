@@ -66,7 +66,7 @@
     <string name="enter_otp">Enter OTP</string>
     <string name="get_otp">Get OTP</string>
     <string name="profile_id">Profile ID:</string>
-    <string name="your_id_register_successfully_login_your_account_using_your_register_email_id_and_password">YOUR ID REGISTER SUCCESSFULLY LOGIN YOUR ACCOUNT USING YOUR REGISTER EMAIL ID AND PASSWORD</string>
+    <string name="your_id_register_successfully_login_your_account_using_your_register_email_id_and_password">EMAIL VERIFICATION LINK SEND YOUR EMAIL THEN LOGIN WITH REGISTER EMAIL AND PASSWORD</string>
     <string name="referral_code">Referral Code</string>
     <string name="hint">*****</string>
     <string name="downline">Downline</string>

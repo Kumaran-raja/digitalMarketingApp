@@ -93,7 +93,20 @@
                 android:minHeight="48dp"
                 android:drawableLeft="@drawable/email" />
 
-
+            <EditText
+                android:id="@+id/phone"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:saveEnabled="true"
+                android:autofillHints="phone"
+                android:drawableStart="@drawable/phone"
+                android:drawablePadding="5dp"
+                android:hint="@string/phone"
+                android:inputType="phone"
+                android:minHeight="48dp"
+                android:drawableLeft="@drawable/email" />
 
 
             <EditText

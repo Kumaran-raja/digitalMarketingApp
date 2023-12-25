@@ -11,6 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Business"
         tools:targetApi="31">
+
         <activity
             android:name=".AmountAddedHistory"
             android:exported="false" />
@@ -62,16 +63,7 @@
         <activity
             android:name=".allwork"
             android:exported="false" />
-        <activity
-            android:name=".allpage"
-            android:exported="false"
-            android:label="@string/title_activity_allpage"
-            android:theme="@style/Theme.Business.NoActionBar" />
-        <activity
-            android:name=".Mainpage"
-            android:exported="false"
-            android:label="@string/title_activity_mainpage"
-            android:theme="@style/Theme.Business.NoActionBar" />
+
         <activity
             android:name=".registerationpage"
             android:exported="false" />

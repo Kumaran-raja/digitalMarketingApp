@@ -3,6 +3,7 @@ package com.example.kumaranraja.business;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -33,7 +35,7 @@ import java.util.Objects;
 public class registerationpage extends AppCompatActivity {
 
 
-    EditText name, email, password, referralcode;
+    EditText name, email, password, referralcode,phone;
 
     TextView login, alert;
     Button signup;
@@ -62,11 +64,7 @@ public class registerationpage extends AppCompatActivity {
         process = findViewById(R.id.process);
         referralcode = findViewById(R.id.referralcode);
         radioGroup = findViewById(R.id.planview);
-
-
-
-
-
+        phone=findViewById(R.id.phone);
         // Generate a unique code and display it in the TextView
         process.setVisibility(View.INVISIBLE);
         login.setOnClickListener(view -> {
@@ -80,6 +78,7 @@ public class registerationpage extends AppCompatActivity {
             String Useremail = email.getText().toString();
             String userPassword = password.getText().toString();
             String sponserid = referralcode.getText().toString();
+            String phonenumber =phone.getText().toString();
             int selectedRadioButtonId = radioGroup.getCheckedRadioButtonId();
 
             if (userName.isEmpty()) {
@@ -94,17 +93,40 @@ public class registerationpage extends AppCompatActivity {
             } else if (sponserid.isEmpty()) {
                 referralcode.setError("Enter Your Referral Code");
                 process.setVisibility(View.INVISIBLE);
-            }
-            else if (selectedRadioButtonId == -1) {
+            } else if (phonenumber.length()!=10) {
+                phone.setError("Enter Correct Phone Number");
+
+                process.setVisibility(View.INVISIBLE);
+            } else if (selectedRadioButtonId == -1) {
                 Toast.makeText(registerationpage.this, "Select yor plan", Toast.LENGTH_SHORT).show();
                 process.setVisibility(View.INVISIBLE);
             }else {
                 process.setVisibility(View.VISIBLE);
+                phonenumberexist(phonenumber,sponserid);
 
-                checkCodeExists(sponserid);
 
                 process.setVisibility(View.INVISIBLE);
-               // signupaccount(userName, Useremail, userPassword, sponserid);
+            }
+        });
+    }
+
+    private void phonenumberexist(String phone,String sponserid) {
+        DatabaseReference phonenocheck = FirebaseDatabase.getInstance().getReference("Phone Number Check");
+        phonenocheck.orderByValue().equalTo(phone).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    // Name already exists
+                    Toast.makeText(registerationpage.this, "Phone Number already exists!", Toast.LENGTH_SHORT).show();
+                }else{
+                    checkCodeExists(sponserid);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle error
+                Toast.makeText(registerationpage.this, "Database error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -121,9 +143,9 @@ public class registerationpage extends AppCompatActivity {
                     String Useremail = email.getText().toString();
                     String userPassword = password.getText().toString();
                     String sponserid = referralcode.getText().toString();
-
+                    String phonenumber =phone.getText().toString();
                     String selectedOption = radioGroup.toString();
-                    signupAccount(userName,Useremail, userPassword, sponserid, selectedOption);
+                    signupAccount(userName,Useremail, phonenumber,userPassword, sponserid, selectedOption);
                     process.setVisibility(View.INVISIBLE);
 
                 } else {
@@ -142,15 +164,16 @@ public class registerationpage extends AppCompatActivity {
         });
     }
 
-    private void signupAccount(String userName, String useremail, String userPassword, String sponserid,String selectedOption) {
+    private void signupAccount(String userName, String useremail,String phone, String userPassword, String sponserid,String selectedOption) {
         // Sponsor code exists, proceed with registration
         auth.createUserWithEmailAndPassword(useremail, userPassword)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
+                        sendVerificationEmail();
+                        
                         String refer = referralcode.getText().toString();
                         String name1 = name.getText().toString();
 
-                        //User user = new User(name1);
                         String IdStatus="INACTIVE";
 
                         TextView uniqueCodeTextView = findViewById(R.id.uniqueCodeTextView);
@@ -159,6 +182,8 @@ public class registerationpage extends AppCompatActivity {
                         uniqueCodeTextView.setText(uniqueCode);
 
 
+                        DatabaseReference phonenocheck = FirebaseDatabase.getInstance().getReference("Phone Number Check");
+                        phonenocheck.push().setValue(phone);
 
                         //downline check
                         DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("DOWNLINES");
@@ -193,14 +218,15 @@ public class registerationpage extends AppCompatActivity {
                         sponsorRef.child("registrationDate").setValue(currentDate);
                         sponsorRef.child("Downline Name").setValue(name1);
                         sponsorRef.child("status").setValue(IdStatus);
+                        sponsorRef.child("Phone Number").setValue(phone);
                         String userEmail = Objects.requireNonNull(auth.getCurrentUser()).getEmail();
                         email.setText(userEmail);
 
-                        String phone1="";
+
                         String  dob1="";
                         String address1="";
                         String plan= selectedOption1;
-                        User user = new User(name1,phone1,userEmail,dob1,address1,refer,uniqueCode,currentDate,IdStatus,plan);
+                        User user = new User(name1,phone,userEmail,dob1,address1,refer,uniqueCode,currentDate,IdStatus,plan);
 
 
                         myRef.child(Objects.requireNonNull(auth.getUid())).setValue(user);
@@ -214,6 +240,20 @@ public class registerationpage extends AppCompatActivity {
                 });
     }
 
+    private void sendVerificationEmail() {
+        FirebaseUser user = auth.getCurrentUser();
+        if (user != null) {
+            user.sendEmailVerification()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(registerationpage.this, "Verification email sent to Your EMAIL", Toast.LENGTH_SHORT).show();
+                            // You can add code to navigate to a verification activity or handle the UI accordingly
+                        } else {
+                            Toast.makeText(registerationpage.this, "Failed to send verification email", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
+    }
 
 
     //Task Wallet initial
@@ -221,6 +261,7 @@ public class registerationpage extends AppCompatActivity {
     private void initializeTaskWalletForNewUser(String uniqueCode) {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         String uid = mAuth.getUid();
+
 
         if (uid != null) {
             DatabaseReference taskWalletRef = FirebaseDatabase.getInstance().getReference("WalletAvailableAmount").child(uniqueCode).child(uid);
