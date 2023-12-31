@@ -1,31 +1,29 @@
 package com.example.kumaranraja.business;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Objects;
 
 public class allwork extends AppCompatActivity {
 
-    TextView name,phone,email,sponsorid,DOJ,joinplan;
+    TextView name,phone,email,sponsorid,DOJ,joinplan,withtrawalhistory;
     Button statusview;
 
     TextView taskwallet,profileid,downline,history;
@@ -38,13 +36,13 @@ public class allwork extends AppCompatActivity {
 
     DatabaseReference downlinesRef;
 
-    DatabaseReference PayoutHistory = database.getReference("Payout History");
+    DatabaseReference PayoutHistory = database.getReference("Plan Upgrade Fees & Withdrawal History");
+    SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_allwork);
-
         taskwallet=findViewById(R.id.taskincome);
         referralWallet=findViewById(R.id.refrralincome);
         profile=findViewById(R.id.profile);
@@ -62,10 +60,16 @@ public class allwork extends AppCompatActivity {
         DOJ=findViewById(R.id.DOJ);
         statusview=findViewById(R.id.status);
         history=findViewById(R.id.history);
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
+        withtrawalhistory = findViewById(R.id.withdrawalhistory);
 
-
-
-
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Perform your refresh operation here
+                fetchData();
+            }
+        });
         profileref.child(Objects.requireNonNull(mAuth.getUid())).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -73,10 +77,7 @@ public class allwork extends AppCompatActivity {
                     // Retrieve the user's data from the database
                     User user = dataSnapshot.getValue(User.class);
 
-                    // Populate the EditText fields with the retrieved data
-
-
-                    // only for checking purpose
+                    assert user != null;
                     name.setText(user.getName());
                     phone.setText(user.getPhone());
                     email.setText(user.getEmail());
@@ -92,12 +93,7 @@ public class allwork extends AppCompatActivity {
                 // Handle any errors here
             }
         });
-
-
-
         // retrieve data from database
-
-
         profileref.child(Objects.requireNonNull(mAuth.getUid())).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -114,117 +110,122 @@ public class allwork extends AppCompatActivity {
                         phone.setText(user.getPhone());
                         email.setText(user.getEmail());
                         profileid.setText(user.getProfileID());
+
+                        SharedPreferences sharedPreferences1 = getSharedPreferences("MyProPrefs", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences1.edit();
+                        editor.putString("userProfileId",profileid.getText().toString());
+                        editor.apply();
+
                         sponsorid.setText(user.getSponsor());
                         DOJ.setText(user.getRegDate());
                         joinplan.setText(user.getPlan());
                         statusview.setText(user.getStatus());
+                        String status=statusview.getText().toString();
+                        withdrawals.setEnabled(status.equals("ACTIVE"));
                         String proid=user.getProfileID();
 
                         taskwalletretrieve(proid);
                         referralwaletretrieve(proid);
 
-                        statusview.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
+                        statusview.setOnClickListener(view -> {
 
-                                SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
-                                String userId = sharedPreferences.getString("userId", "");
+                            SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+                            String userId = sharedPreferences.getString("userId", "");
 
-                                String profile=profileid.getText().toString();
-                                String planStatus=joinplan.getText().toString();
+                            String profile=profileid.getText().toString();
+                            String planStatus=joinplan.getText().toString();
 
-                                String sponsor=sponsorid.getText().toString();
-                                Log.d("StatusButtonClick", "myprofileID: " + sponsor);
-                                downlinesRef = FirebaseDatabase.getInstance()
-                                        .getReference("DOWNLINES")
-                                        .child(sponsor)
-                                        .child(userId);
+                            String sponsor=sponsorid.getText().toString();
+                            Log.d("StatusButtonClick", "myprofileID: " + sponsor);
+                            downlinesRef = FirebaseDatabase.getInstance()
+                                    .getReference("DOWNLINES")
+                                    .child(sponsor)
+                                    .child(userId);
 
 
 
-                                //taskwallet amount get for plan upgrade
-                                int taskincome=Integer.parseInt(String.valueOf(taskwallet.getText()));
-                                Log.d("StatusButtonClick", "taskincome: " + taskincome);
-                                String IdStatus=statusview.getText().toString();
-                                Log.d("StatusButtonClick", "IdStatus: " + IdStatus);
-                                if(IdStatus.equals("ACTIVE")){
-                                    statusview.setEnabled(false);
-                                    Toast.makeText(allwork.this, "Already Your Id Active", Toast.LENGTH_SHORT).show();
-                                } else if (IdStatus.equals("INACTIVE")) {
+                            //taskwallet amount get for plan upgrade
+                            int taskincome=Integer.parseInt(String.valueOf(taskwallet.getText()));
+                            Log.d("StatusButtonClick", "taskincome: " + taskincome);
+                            String IdStatus=statusview.getText().toString();
+                            Log.d("StatusButtonClick", "IdStatus: " + IdStatus);
+                            if(IdStatus.equals("ACTIVE")){
+                                statusview.setEnabled(false);
+                                Toast.makeText(allwork.this, "Already Your Id Active", Toast.LENGTH_SHORT).show();
+                            } else if (IdStatus.equals("INACTIVE")) {
 
-                                    String planstatuschange="ACTIVE";
-                                    if(planStatus.equals("Bronze")){
-                                        if(300 <= taskincome){
+                                String planstatuschange="ACTIVE";
+                                if(planStatus.equals("Bronze")){
+                                    if(300 <= taskincome){
 
-                                            downlinesRef.child("status").setValue("ACTIVE");
-                                            String status= "ACTIVE";
-                                            statuschange();
-                                            int Activationfees=300;
+                                        downlinesRef.child("status").setValue("ACTIVE");
+                                        String status1 = "ACTIVE";
+                                        statuschange();
+                                        int Activationfees=300;
 
-                                            int sponsorwallet=30;
+                                        int sponsorwallet=30;
 
-                                            removeActiveAmountfromWallet(Activationfees,profile,sponsorwallet);
-                                            statusview.setText("ACTIVE");
-                                            statusview.setEnabled(false);
+                                        removeActiveAmountfromWallet(Activationfees,profile,sponsorwallet);
+                                        statusview.setText("ACTIVE");
+                                        statusview.setEnabled(false);
 
-                                        }else{
-                                            Toast.makeText(allwork.this, "Minimum Reach 300 Rs", Toast.LENGTH_SHORT).show();
-                                        }
+                                    }else{
+                                        Toast.makeText(allwork.this, "Minimum Reach 300 Rs", Toast.LENGTH_SHORT).show();
                                     }
-                                    else if (planStatus.equals("Silver")) {
-                                        if(1200 <= taskincome){
-                                            statusview.setText("ACTIVE");
-                                            downlinesRef.child("status").setValue("ACTIVE");
-                                            int Activationfees=1200;
+                                }
+                                else if (planStatus.equals("Silver")) {
+                                    if(1200 <= taskincome){
+                                        statusview.setText("ACTIVE");
+                                        downlinesRef.child("status").setValue("ACTIVE");
+                                        int Activationfees=1200;
 
-                                            int sponsorwallet=120;
-                                            removeActiveAmountfromWallet(Activationfees,profile,sponsorwallet);
-                                            statusview.setEnabled(false);
+                                        int sponsorwallet=120;
+                                        removeActiveAmountfromWallet(Activationfees,profile,sponsorwallet);
+                                        statusview.setEnabled(false);
 
-                                        }else{
-                                            Toast.makeText(allwork.this, "Minimum Reach 1200 Rs", Toast.LENGTH_SHORT).show();
-                                        }
-
+                                    }else{
+                                        Toast.makeText(allwork.this, "Minimum Reach 1200 Rs", Toast.LENGTH_SHORT).show();
                                     }
-                                    else if (planStatus.equals("Gold")) {
-                                        if(2500 <= taskincome){
-                                            statusview.setText("ACTIVE");
-                                            downlinesRef.child("status").setValue("ACTIVE");
 
-                                            int Activationfees=2500;
-                                            int sponsorwallet=250;
+                                }
+                                else if (planStatus.equals("Gold")) {
+                                    if(2500 <= taskincome){
+                                        statusview.setText("ACTIVE");
+                                        downlinesRef.child("status").setValue("ACTIVE");
 
-                                            removeActiveAmountfromWallet(Activationfees,profile,sponsorwallet);
-                                            statusview.setEnabled(false);
+                                        int Activationfees=2500;
+                                        int sponsorwallet=250;
 
-                                        }else{
-                                            Toast.makeText(allwork.this, "Minimum Reach 2500 Rs", Toast.LENGTH_SHORT).show();
-                                        }
+                                        removeActiveAmountfromWallet(Activationfees,profile,sponsorwallet);
+                                        statusview.setEnabled(false);
 
+                                    }else{
+                                        Toast.makeText(allwork.this, "Minimum Reach 2500 Rs", Toast.LENGTH_SHORT).show();
                                     }
-                                    else if (planStatus.equals("Diamond")) {
-                                        if(6000 <= taskincome){
-                                            statusview.setText("ACTIVE");
-                                            downlinesRef.child("status").setValue("ACTIVE");
 
-                                            int Activationfees=6000;
+                                }
+                                else if (planStatus.equals("Diamond")) {
+                                    if(6000 <= taskincome){
+                                        statusview.setText("ACTIVE");
+                                        downlinesRef.child("status").setValue("ACTIVE");
 
-                                            int sponsorwallet=600;
-                                            removeActiveAmountfromWallet(Activationfees,profile,sponsorwallet);
-                                            statusview.setEnabled(false);
+                                        int Activationfees=6000;
 
-                                        }else{
-                                            Toast.makeText(allwork.this, "Minimum Reach 6000 Rs", Toast.LENGTH_SHORT).show();
-                                        }
+                                        int sponsorwallet=600;
+                                        removeActiveAmountfromWallet(Activationfees,profile,sponsorwallet);
+                                        statusview.setEnabled(false);
 
+                                    }else{
+                                        Toast.makeText(allwork.this, "Minimum Reach 6000 Rs", Toast.LENGTH_SHORT).show();
                                     }
-                                    else{
-                                        Toast.makeText(allwork.this, "Plan Error Contact Admin Team", Toast.LENGTH_SHORT).show();
-                                    }
+
                                 }
                                 else{
-                                    Toast.makeText(allwork.this, "Contact Admin", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(allwork.this, "Plan Error Contact Admin Team", Toast.LENGTH_SHORT).show();
                                 }
+                            }
+                            else{
+                                Toast.makeText(allwork.this, "Contact Admin", Toast.LENGTH_SHORT).show();
                             }
                         });
 
@@ -253,6 +254,7 @@ public class allwork extends AppCompatActivity {
         todaytask.setOnClickListener(view -> {
 
             Intent i=new Intent(allwork.this,Today_task.class);
+
             startActivity(i);
         });
         bankdetails.setOnClickListener(view -> {
@@ -277,10 +279,18 @@ public class allwork extends AppCompatActivity {
             startActivity(i);
         });
 
+        withtrawalhistory.setOnClickListener(view -> {
+            Intent i=new Intent(allwork.this, activation_and_withdrawal_history.class);
+            startActivity(i);
+        });
+
 
 
     }
 
+    private void fetchData() {
+        swipeRefreshLayout.setRefreshing(false);
+    }
 
 
     private void referralwaletretrieve(String proid) {
@@ -380,12 +390,12 @@ public class allwork extends AppCompatActivity {
 
 
     private void updateReferralWalletInUI(int updatedReferralWalletAmount) {
-        referralWallet.setText(String.valueOf(updatedReferralWalletAmount));
+        referralWallet.setText(String.valueOf(+updatedReferralWalletAmount));
     }
 
     // This method is called when the taskwallet is updated in Firebase
     private void updateTaskWalletInUI(int updatedTaskWalletAmount) {
-        taskwallet.setText(String.valueOf(updatedTaskWalletAmount));
+        taskwallet.setText(String.valueOf(+updatedTaskWalletAmount));
     }
 
 

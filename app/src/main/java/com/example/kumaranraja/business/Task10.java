@@ -2,7 +2,6 @@ package com.example.kumaranraja.business;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -15,14 +14,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -45,7 +43,7 @@ public class Task10 extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_task4);
+        setContentView(R.layout.activity_task10);
         webView = findViewById(R.id.webvideo);
         submittask = findViewById(R.id.submit);
         process = findViewById(R.id.process);
@@ -126,6 +124,7 @@ public class Task10 extends AppCompatActivity {
             disableButtonForDay();
 
             Intent i = new Intent(Task10.this, Today_task.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP| Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(i);
 
 
@@ -175,17 +174,15 @@ public class Task10 extends AppCompatActivity {
                     SharedPreferences sharedPreferences = getSharedPreferences("Task1Prefs", MODE_PRIVATE);
                     int amountToAdd = amount;
                     String currentDate = getCurrentDate();
-                    String description="Task10 Amount";
+                    String description="Task 10 Amount";
                     DatabaseReference value = PayoutHistory.child(mAuth.getUid()).child(profileid).child("Task10");
                     value.child("Task date").setValue(currentDate);
                     value.child("Amount From").setValue(description);
                     value.child("amount").setValue(amountToAdd);
+                    value.child("timestamp").setValue(ServerValue.TIMESTAMP);
                     int currentTaskWalletAmount = sharedPreferences.getInt("taskwallet", 0);
 
                     checkFirebaseTaskWallet(currentTaskWalletAmount, amountToAdd,profileid);
-
-                } else {
-                    Toast.makeText(Task10.this, "", Toast.LENGTH_SHORT).show();
 
                 }
             }
@@ -247,11 +244,11 @@ public class Task10 extends AppCompatActivity {
             myRef.setValue(updatedTaskWalletAmount)
                     .addOnSuccessListener(aVoid -> {
                         // Update in Firebase successful
-                        Toast.makeText(Task10.this, "Task3 amount Added Successfully", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Task10.this, "Task 10 amount Added Successfully", Toast.LENGTH_SHORT).show();
                     })
                     .addOnFailureListener(e -> {
                         // Handle failure
-                        Toast.makeText(Task10.this, "Task3 amount cannot Added Check Your Internet Connection", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Task10.this, "Task 10 amount cannot Added Check Your Internet Connection", Toast.LENGTH_SHORT).show();
                     });
         }
     }

@@ -89,8 +89,8 @@ public class Profile_activity extends AppCompatActivity {
                         String selectedDate = year + "-" + (month + 1) + "-" + dayOfMonth; // Month is zero-based
                         dob.setText(selectedDate);
                     },
-                    // Set the default date (optional)
-                    1990, 0, 1 // January 1, 1990 (you can set the initial date as per your requirements)
+
+                    1990, 0, 1
             );
 
             // Show the DatePickerDialog

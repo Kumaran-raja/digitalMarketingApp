@@ -4,8 +4,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -23,16 +25,20 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
 public class Withdrawal_activity extends AppCompatActivity {
 
-    TextView taskincome,referralincome,taskview,referview;
+    TextView taskincome,referralincome,taskview,referview,display,minimumTaskWalletAmount,minimumReferralWalletAmount;
     EditText enterAmount;
     Button withdrawal;
     FirebaseAuth mAuth;
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef = database.getReference("Withdrawal List");
+    DatabaseReference PayoutHistory = database.getReference("Plan Upgrade Fees & Withdrawal History");
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,10 +47,13 @@ public class Withdrawal_activity extends AppCompatActivity {
         withdrawal = findViewById(R.id.withdrawal);
         mAuth = FirebaseAuth.getInstance();
         taskincome = findViewById(R.id.taskamount);
-
+        minimumReferralWalletAmount = findViewById(R.id.referwalletdisplay);
+        minimumTaskWalletAmount = findViewById(R.id.taskwalletdisplay);
+        display = findViewById(R.id.display);
         referralincome = findViewById(R.id.referralamount);
         taskview = findViewById(R.id.taskview);
         referview = findViewById(R.id.referview);
+        display.setVisibility(View.INVISIBLE);
 
         String taskIncomeText = taskincome.getText().toString();
         int taskincomeenable = TextUtils.isDigitsOnly(taskIncomeText) ? Integer.parseInt(taskIncomeText) : 0;
@@ -86,15 +95,23 @@ public class Withdrawal_activity extends AppCompatActivity {
                 if("Task Wallet".equals(selectedItem)){
                     taskview.setVisibility(View.VISIBLE);
                     taskincome.setVisibility(View.VISIBLE);
-
+                    withdrawal.setEnabled(true);
                     referview.setVisibility(View.GONE);
                     referralincome.setVisibility(View.GONE);
+                    display.setVisibility(View.GONE);
+                    enterAmount.setText("");
+                    minimumReferralWalletAmount.setVisibility(View.GONE);
+                    minimumTaskWalletAmount.setVisibility(View.VISIBLE);
                 } else if ("Referral Wallet".equals(selectedItem)) {
                     referview.setVisibility(View.VISIBLE);
                     referralincome.setVisibility(View.VISIBLE);
-
+                    withdrawal.setEnabled(true);
                     taskview.setVisibility(View.GONE);
                     taskincome.setVisibility(View.GONE);
+                    display.setVisibility(View.GONE);
+                    enterAmount.setText("");
+                    minimumReferralWalletAmount.setVisibility(View.VISIBLE);
+                    minimumTaskWalletAmount.setVisibility(View.GONE);
                 }
             }
 
@@ -109,23 +126,62 @@ public class Withdrawal_activity extends AppCompatActivity {
         withdrawal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                String enter=enterAmount.getText().toString();
+                if(enter.isEmpty()){
+                    enterAmount.setError("Enter Amount");
+                    return;
+                }
                 String selectedItem = spinner.getSelectedItem().toString();
                 if(selectedItem.equals("Task Wallet")){
                     int EnterAmount1 = Integer.parseInt(enterAmount.getText().toString());
                     int taskavailableamount = Integer.parseInt(taskincome.getText().toString());
+
                     if (EnterAmount1 < 5000) {
                         Toast.makeText(Withdrawal_activity.this, "MINIMUM WITHDRAWAL 5000", Toast.LENGTH_LONG).show();
                     }else if (taskavailableamount < 5000) {
                         Toast.makeText(Withdrawal_activity.this, "Task Income Reach Minimum 5000", Toast.LENGTH_LONG).show();
                     } else {
+                        SharedPreferences sharedPreferences = getSharedPreferences("MyProPrefs", MODE_PRIVATE);
+                        String userId = sharedPreferences.getString("userProfileId", "");
+                        DatabaseReference taskWalletRef = myRef.child("TaskWallet").child(userId).child(mAuth.getUid());
 
-                        HashMap<String, Object> result = new HashMap<>();
-                        String enterreqAmount = enterAmount.getText().toString();
-                        removeTaskAmountfromWallet(enterreqAmount);
-                        result.put("Withdrawal Amount", enterreqAmount);
-                        myRef.child("TaskWallet").child(mAuth.getUid()).setValue(result);
-                        Toast.makeText(Withdrawal_activity.this, "Withdrawal Request Submit Sucessfully!!!", Toast.LENGTH_LONG).show();
+                        taskWalletRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()) {
+                                    display.setVisibility(View.VISIBLE);
+                                    enterAmount.setText("");
+                                    withdrawal.setEnabled(false);
+                                } else {
+                                    display.setVisibility(View.INVISIBLE);
+                                    HashMap<String, Object> result = new HashMap<>();
+                                    String enterreqAmount = enterAmount.getText().toString();
 
+                                    int taskWithdrawal = Integer.parseInt(String.valueOf(enterreqAmount));
+                                    //payout history
+                                    String currentDate = getCurrentDate();
+                                    String description="TaskWallet";
+                                    DatabaseReference value = PayoutHistory.child(mAuth.getUid()).child(userId).child("Task Wallet Deduction");
+                                    value.child("Task date").setValue(currentDate);
+                                    value.child("Amount From").setValue(description);
+                                    value.child("amount").setValue(taskWithdrawal);
+
+                                    removeTaskAmountfromWallet(enterreqAmount);
+
+                                    result.put("Withdrawal Amount", enterreqAmount);
+                                    myRef.child("TaskWallet").child(userId).child(mAuth.getUid()).setValue(result);
+                                    enterAmount.setText("");
+                                    Toast.makeText(Withdrawal_activity.this, "Withdrawal Request Submit Sucessfully!!!", Toast.LENGTH_LONG).show();
+
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                // Handle the error
+                                Log.e("DatabaseError", "Error checking data", databaseError.toException());
+                            }
+                        });
 
                     }
                 }
@@ -133,19 +189,58 @@ public class Withdrawal_activity extends AppCompatActivity {
                 else if(selectedItem.equals("Referral Wallet")){
                     int EnterAmount1 = Integer.parseInt(enterAmount.getText().toString());
                     int referavailableamount = Integer.parseInt(referralincome.getText().toString());
-                    if (EnterAmount1 < 600) {
-                        Toast.makeText(Withdrawal_activity.this, "MINIMUM WITHDRAWAL 600", Toast.LENGTH_LONG).show();
-                    }else if (referavailableamount < 600) {
-                        Toast.makeText(Withdrawal_activity.this, "Referral Income Reach Minimum 600", Toast.LENGTH_LONG).show();
+                    if (EnterAmount1 < 500) {
+                        Toast.makeText(Withdrawal_activity.this, "MINIMUM WITHDRAWAL 500", Toast.LENGTH_LONG).show();
+                    }else if (referavailableamount < 500) {
+                        Toast.makeText(Withdrawal_activity.this, "Referral Income Reach Minimum 500", Toast.LENGTH_LONG).show();
                     } else {
 
-                        HashMap<String, Object> result = new HashMap<>();
-                        String enterreqAmount = enterAmount.getText().toString();
-                        removeReferralAmountfromWallet(enterreqAmount);
-                        result.put("Withdrawal Amount", enterreqAmount);
-                        myRef.child("ReferralWallet").child(mAuth.getUid()).setValue(result);
-                        Toast.makeText(Withdrawal_activity.this, "Withdrawal Request Submit Sucessfully!!!", Toast.LENGTH_LONG).show();
+                        SharedPreferences sharedPreferences = getSharedPreferences("MyProPrefs", MODE_PRIVATE);
+                        String userId = sharedPreferences.getString("userProfileId", "");
+                        DatabaseReference taskWalletRef = myRef.child("ReferralWallet").child(userId).child(mAuth.getUid());
 
+                        taskWalletRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()) {
+                                    display.setVisibility(View.VISIBLE);
+                                    enterAmount.setText("");
+                                    withdrawal.setEnabled(false);
+
+                                } else {
+                                    display.setVisibility(View.INVISIBLE);
+                                    HashMap<String, Object> result = new HashMap<>();
+                                    String enterreqAmount = enterAmount.getText().toString();
+                                    removeReferralAmountfromWallet(enterreqAmount);
+
+                                    SharedPreferences sharedPreferences = getSharedPreferences("MyProPrefs", MODE_PRIVATE);
+                                    String userId = sharedPreferences.getString("userProfileId", "");
+
+                                    int taskWithdrawal = Integer.parseInt(String.valueOf(enterreqAmount));
+
+                                    //payout history
+                                    String currentDate = getCurrentDate();
+                                    String description="Referral Wallet";
+                                    DatabaseReference value = PayoutHistory.child(mAuth.getUid()).child(userId).child("Referral Wallet Deduction");
+                                    value.child("Task date").setValue(currentDate);
+                                    value.child("Amount From").setValue(description);
+                                    value.child("amount").setValue(taskWithdrawal);
+
+                                    result.put("Withdrawal Amount", enterreqAmount);
+                                    myRef.child("ReferralWallet").child(userId).child(mAuth.getUid()).setValue(result);
+                                    enterAmount.setText("");
+                                    Toast.makeText(Withdrawal_activity.this, "Withdrawal Request Submit Sucessfully!!!", Toast.LENGTH_LONG).show();
+
+
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                // Handle the error
+                                Log.e("DatabaseError", "Error checking data", databaseError.toException());
+                            }
+                        });
 
                     }
                 }
@@ -165,7 +260,10 @@ public class Withdrawal_activity extends AppCompatActivity {
     private void removeTaskAmountfromWallet(String enterreqAmount) {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         String uid = mAuth.getUid();
-        DatabaseReference taskWalletRef = FirebaseDatabase.getInstance().getReference("WalletAvailableAmount").child(uid);
+        SharedPreferences sharedPreferences = getSharedPreferences("MyProPrefs", MODE_PRIVATE);
+        String userId = sharedPreferences.getString("userProfileId", "");
+
+        DatabaseReference taskWalletRef = FirebaseDatabase.getInstance().getReference("WalletAvailableAmount").child(userId).child(uid);
 
         // Check if the taskwallet value already exists
         taskWalletRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -203,7 +301,10 @@ public class Withdrawal_activity extends AppCompatActivity {
     private void removeReferralAmountfromWallet(String enterreqAmount) {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         String uid = mAuth.getUid();
-        DatabaseReference referWalletRef = FirebaseDatabase.getInstance().getReference("WalletAvailableAmount").child(uid);
+        SharedPreferences sharedPreferences = getSharedPreferences("MyProPrefs", MODE_PRIVATE);
+        String userId = sharedPreferences.getString("userProfileId", "");
+
+        DatabaseReference referWalletRef = FirebaseDatabase.getInstance().getReference("WalletAvailableAmount").child(userId).child(uid);
 
         // Check if the taskwallet value already exists
         referWalletRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -236,6 +337,14 @@ public class Withdrawal_activity extends AppCompatActivity {
         });
     }
 
+    private String getCurrentDate() {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+        return sdf.format(new Date());
+    }
+
 }
+
+
+
 
 

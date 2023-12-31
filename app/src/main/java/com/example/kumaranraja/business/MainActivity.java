@@ -63,9 +63,15 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 process.setVisibility(View.VISIBLE);
                 signin(userEmail, userPassword);
+
             }
 
+
         });
+    }
+    private void clearInputFields() {
+        email.setText("");
+        password.setText("");
     }
 
     public void signin(String userEmail, String userPassword) {
@@ -75,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
                 if (user != null && user.isEmailVerified()) {
                     Intent i = new Intent(MainActivity.this, allwork.class);
                     startActivity(i);
+                    clearInputFields();
                     process.setVisibility(View.INVISIBLE);
                 } else {
                     // Email is not verified

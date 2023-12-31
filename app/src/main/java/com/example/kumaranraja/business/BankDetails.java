@@ -103,9 +103,6 @@ public class BankDetails extends AppCompatActivity {
                     branchname.setText(bank1.getBranch());
 
 
-                } else {
-
-                    Toast.makeText(BankDetails.this, "Edit Your Bank Details", Toast.LENGTH_SHORT).show();
                 }
             }
 

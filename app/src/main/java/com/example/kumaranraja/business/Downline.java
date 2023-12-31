@@ -27,6 +27,7 @@ public class Downline extends AppCompatActivity {
     private TableLayout tableLayout;
     FirebaseAuth mAuth;
     ImageView backButton;
+    TextView msgview;
 
     private DatabaseReference downlinesRef;
 
@@ -39,6 +40,7 @@ public class Downline extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         backButton=findViewById(R.id.backactivity);
         backButton.setOnClickListener(v -> finish());
+        msgview=findViewById(R.id.msgview);
         String uid = mAuth.getUid();
         downlinesRef = FirebaseDatabase.getInstance()
                 .getReference("DOWNLINES");
@@ -46,6 +48,7 @@ public class Downline extends AppCompatActivity {
         if (uid != null) {
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference codesRef = database.getReference("Users Details").child(uid);
+
 
             // Attach a ValueEventListener to retrieve the data
             codesRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -64,8 +67,10 @@ public class Downline extends AppCompatActivity {
                             downlinesRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    if(dataSnapshot.exists()){
+                                        msgview.setVisibility(View.INVISIBLE);
+                                    }
                                     for (DataSnapshot downlineSnapshot : dataSnapshot.getChildren()) {
-
                                         String downlineKey = downlineSnapshot.getKey();
                                         String downlineProfileId = downlineSnapshot.child("Downline ProfileID").getValue(String.class);
                                         String regDate = downlineSnapshot.child("registrationDate").getValue(String.class);
@@ -106,6 +111,7 @@ public class Downline extends AppCompatActivity {
         sno.setText(String.valueOf(tableLayout.getChildCount()));
         sno.setPadding(8, 25, 8, 25);
         sno.setGravity(Gravity.CENTER);
+        sno.setBackgroundResource(R.drawable.background_shape);
         sno.setTextSize(20);
         tableRow.addView(sno);
 
@@ -114,6 +120,7 @@ public class Downline extends AppCompatActivity {
         downlineName.setPadding(8, 25, 8, 25);
         downlineName.setGravity(Gravity.CENTER);
         downlineName.setTextSize(20);
+        downlineName.setBackgroundResource(R.drawable.background_shape);
         tableRow.addView(downlineName);
 
         TextView downlineprofileId = new TextView(this);
@@ -121,6 +128,7 @@ public class Downline extends AppCompatActivity {
         downlineprofileId.setPadding(8, 25, 8, 25);
         downlineprofileId.setGravity(Gravity.CENTER);
         downlineprofileId.setTextSize(20);
+        downlineprofileId.setBackgroundResource(R.drawable.background_shape);
         tableRow.addView(downlineprofileId);
 
         TextView downlineDOJ = new TextView(this);
@@ -128,6 +136,7 @@ public class Downline extends AppCompatActivity {
         downlineDOJ.setPadding(8, 25, 8, 25);
         downlineDOJ.setGravity(Gravity.CENTER);
         downlineDOJ.setTextSize(20);
+        downlineDOJ.setBackgroundResource(R.drawable.background_shape);
         tableRow.addView(downlineDOJ);
 
         TextView Downlineplan = new TextView(this);
@@ -135,6 +144,7 @@ public class Downline extends AppCompatActivity {
         Downlineplan.setPadding(8, 25, 8, 25);
         Downlineplan.setGravity(Gravity.CENTER);
         Downlineplan.setTextSize(20);
+        Downlineplan.setBackgroundResource(R.drawable.background_shape);
         tableRow.addView(Downlineplan);
 
 
@@ -143,6 +153,7 @@ public class Downline extends AppCompatActivity {
         DownlineIDstatus.setPadding(8, 25, 8, 25);
         DownlineIDstatus.setGravity(Gravity.CENTER);
         DownlineIDstatus.setTextSize(20);
+        DownlineIDstatus.setBackgroundResource(R.drawable.background_shape);
         tableRow.addView(DownlineIDstatus);
         tableLayout.addView(tableRow);
     }

@@ -40,15 +40,25 @@
         android:textSize="30sp"
         android:layout_gravity="center"
         android:textStyle="bold"
-        android:layout_marginTop="50dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginStart="10dp" />
+        android:layout_marginTop="30dp"
+       />
 
     <TextView
+        android:id="@+id/taskwalletdisplay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/minimum_withdrawal_request_amount_650"
-        android:textSize="30sp"
+        android:text="Minimum Request Amount : ₹5000"
+        android:textSize="25sp"
+        android:textColor="#EE0F0F"
+        android:layout_marginTop="20dp"
+        android:textStyle="bold"
+        />
+    <TextView
+        android:id="@+id/referwalletdisplay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Minimum Request Amount : ₹500"
+        android:textSize="25sp"
         android:textColor="#EE0F0F"
         android:layout_marginTop="20dp"
         android:textStyle="bold"
@@ -132,6 +142,18 @@
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
         />
+
+    <TextView
+        android:id="@+id/display"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Withdrawal Request Already Submitted"
+        android:layout_gravity="center"
+        android:textColor="#EB0C0C"
+        android:layout_marginTop="10dp"
+        android:textSize="20sp"
+        />
+
 
 
 </LinearLayout>

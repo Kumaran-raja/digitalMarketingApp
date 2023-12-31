@@ -230,7 +230,6 @@ public class registerationpage extends AppCompatActivity {
 
 
                         myRef.child(Objects.requireNonNull(auth.getUid())).setValue(user);
-                        Toast.makeText(registerationpage.this, "Account SignUp Sucessfully!!!", Toast.LENGTH_LONG).show();
                         process.setVisibility(View.INVISIBLE);
                     } else {
                         // Registration failed
@@ -239,6 +238,7 @@ public class registerationpage extends AppCompatActivity {
                     }
                 });
     }
+
 
     private void sendVerificationEmail() {
         FirebaseUser user = auth.getCurrentUser();

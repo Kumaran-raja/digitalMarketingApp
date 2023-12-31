@@ -39,6 +39,7 @@ public class Today_task extends AppCompatActivity {
 
         Task1.setOnClickListener(view -> {
             Intent i=new Intent(Today_task.this,Task1.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(i);
         });
         Task2.setOnClickListener(view -> {
@@ -51,6 +52,7 @@ public class Today_task extends AppCompatActivity {
         });
         Task4.setOnClickListener(view -> {
             Intent i=new Intent(Today_task.this,Task4.class);
+
             startActivity(i);
         });
         Task5.setOnClickListener(view -> {
@@ -75,6 +77,7 @@ public class Today_task extends AppCompatActivity {
         });
         Task10.setOnClickListener(view -> {
             Intent i=new Intent(Today_task.this,Task10.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(i);
         });
     }

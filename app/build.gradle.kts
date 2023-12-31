@@ -62,4 +62,6 @@ dependencies {
     implementation("de.hdodenhof:circleimageview:2.2.0")
     implementation("com.android.volley:volley:1.2.1")
     implementation("com.google.firebase:firebase-firestore:24.10.0")
+
+    implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 }
